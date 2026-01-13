@@ -42,7 +42,7 @@ const Journal = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post('http://localhost:5000/api/journal/create', {
+      await axios.post('https://ankahee-api.onrender.com/api/journal/create', {
         userId: user._id || user.id,
         mood,
         content,

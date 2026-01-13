@@ -47,7 +47,7 @@ const Dashboard = () => {
 
       try {
         const userId = parsedUser._id || parsedUser.id;
-        const res = await axios.get(`http://localhost:5000/api/auth/user/${userId}`);
+        const res = await axios.get(`https://ankahee-api.onrender.com/api/auth/user/${userId}`);
         const freshUser = res.data;
         setUser(freshUser);
         setXp(freshUser.xp || 0);
@@ -71,7 +71,7 @@ const Dashboard = () => {
     setIsSavingSocial(true);
     try {
         const userId = user._id || user.id;
-        await axios.put('http://localhost:5000/api/auth/update-insta', { userId, instagramId: instaId });
+        await axios.put('https://ankahee-api.onrender.com/api/auth/update-insta', { userId, instagramId: instaId });
         
         // --- 2. SUCCESS TOAST ---
         toast.success("Profile Updated! Ready to connect. 🤝");
@@ -107,7 +107,7 @@ const Dashboard = () => {
     setTimeout(async () => {
         try {
             const userId = user._id || user.id;
-            const res = await axios.get(`http://localhost:5000/api/auth/find-friend/${userId}`);
+            const res = await axios.get(`https://ankahee-api.onrender.com/api/auth/find-friend/${userId}`);
             setMatchedUser(res.data);
         } catch (error) {
             console.error(error);

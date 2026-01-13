@@ -18,7 +18,7 @@ const JournalHistory = () => {
       const user = JSON.parse(userData);
       try {
         const userId = user._id || user.id; 
-        const res = await axios.get(`http://localhost:5000/api/journal/user/${userId}`);
+        const res = await axios.get(`https://ankahee-api.onrender.com/api/journal/user/${userId}`);
         setJournals(res.data);
       } catch (err) {
         console.error(err);
@@ -32,7 +32,7 @@ const JournalHistory = () => {
   const handleDelete = async (journalId) => {
     if (!window.confirm("Delete this memory?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/journal/${journalId}`);
+      await axios.delete(`https://ankahee-api.onrender.com/api/journal/${journalId}`);
       setJournals(journals.filter((j) => j._id !== journalId));
     } catch (err) { alert("Delete failed"); }
   };
