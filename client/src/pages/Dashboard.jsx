@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast'; // <--- 1. Import Toast
-import { LogOut, BookOpen, AlertCircle, Quote, Trophy, Instagram, Save, X, Users, Lock, Copy, Check } from 'lucide-react'; 
+import toast from 'react-hot-toast';
+import { LogOut, BookOpen, AlertCircle, Quote, Trophy, Instagram, Save, X, Users, Lock, Copy, Check, Stethoscope } from 'lucide-react'; // <--- Stethoscope add kiya
 import { useNavigate } from 'react-router-dom';
 import desktopBg from '../assets/dashboard.jpg'; 
 import mobileBg from '../assets/signup8.png';
@@ -72,29 +72,19 @@ const Dashboard = () => {
     try {
         const userId = user._id || user.id;
         await axios.put('https://ankahee-api.onrender.com/api/auth/update-insta', { userId, instagramId: instaId });
-        
-        // --- 2. SUCCESS TOAST ---
         toast.success("Profile Updated! Ready to connect. 🤝");
         setShowSocialModal(false);
     } catch (error) { 
-        // --- 3. ERROR TOAST ---
         toast.error("Update failed. Server issue."); 
     } finally { 
         setIsSavingSocial(false); 
     }
   };
 
-  // --- FIND FRIEND FUNCTION ---
   const handleFindFriend = async () => {
-    // 🔒 LEVEL CHECK LOGIC
     if (level < 5) {
-        // --- 4. LOCKED TOAST ---
         toast.error(`🔒 Locked! Level 5 required.\nKeep journaling to unlock! 🚀`, {
-            style: {
-                borderRadius: '10px',
-                background: '#333',
-                color: '#fff',
-            },
+            style: { borderRadius: '10px', background: '#333', color: '#fff' },
             duration: 4000
         });
         return; 
@@ -121,7 +111,7 @@ const Dashboard = () => {
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
-    toast.success("ID Copied!"); // Optional: Copy par bhi chota toast
+    toast.success("ID Copied!"); 
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -178,8 +168,8 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* --- ACTION BUTTONS --- */}
-      <div className="z-10 w-full max-w-4xl p-6 grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-4 shrink-0">
+      {/* --- ACTION BUTTONS (Updated Grid for 4 Buttons) --- */}
+      <div className="z-10 w-full max-w-4xl p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 shrink-0">
         
         {/* 1. Journal */}
         <motion.button onClick={() => navigate('/journal')} whileHover={{ scale: 1.03, backgroundColor: "rgba(59, 130, 246, 0.2)" }} whileTap={{ scale: 0.98 }}
@@ -206,7 +196,6 @@ const Dashboard = () => {
           }`}>
              {level < 5 ? <Lock size={24} /> : <Users size={24} className="text-pink-300" />}
           </div>
-          
           <div className="text-left">
             <span className={`font-medium text-lg block ${level < 5 ? "text-gray-400" : "text-white"}`}>
                 {level < 5 ? "Locked" : "Connect"}
@@ -223,12 +212,19 @@ const Dashboard = () => {
            <div className="bg-red-500/20 p-3 rounded-full group-hover:bg-red-500/30 transition-colors"><AlertCircle size={24} className="text-red-300" /></div>
           <div className="text-left"><span className="font-medium text-lg text-red-100 block">Panic</span><span className="text-xs text-gray-400">Get Calm</span></div>
         </motion.button>
+
+        {/* 4. THERAPIST (NEW BUTTON) */}
+        <motion.button onClick={() => navigate('/find-doctor')} whileHover={{ scale: 1.03, backgroundColor: "rgba(6, 182, 212, 0.2)" }} whileTap={{ scale: 0.98 }}
+            className="flex items-center p-4 bg-black/40 backdrop-blur-lg border border-white/10 rounded-2xl transition-all group cursor-pointer gap-4 justify-center sm:justify-start">
+            <div className="bg-cyan-500/20 p-3 rounded-full group-hover:bg-cyan-500/30 transition-colors"><Stethoscope size={24} className="text-cyan-300" /></div>
+            <div className="text-left"><span className="font-medium text-lg block text-white">Therapist</span><span className="text-xs text-gray-400">Get Help</span></div>
+        </motion.button>
+
       </div>
 
       {/* --- MODALS --- */}
       <AnimatePresence>
         
-        {/* Profile/Social Modal */}
         {showSocialModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-slate-900 border border-white/10 p-6 rounded-3xl max-w-sm w-full relative shadow-2xl">
@@ -251,7 +247,6 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* --- MATCHING MODAL --- */}
         {showMatchModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} 

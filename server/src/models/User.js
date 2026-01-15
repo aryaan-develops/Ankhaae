@@ -51,7 +51,23 @@ const userSchema = new mongoose.Schema({
   entries: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Journal'
-  }]
+  }],
+
+  // --- 5. NEW: DOCTOR / THERAPIST PROFILE 🩺 ---
+  role: { 
+    type: String, 
+    enum: ['user', 'doctor'], // User ya Doctor
+    default: 'user' 
+  },
+  isDoctor: { 
+    type: Boolean, 
+    default: false 
+  },
+  // Doctor Details (Sirf tab bhara jayega jab role 'doctor' ho)
+  specialization: { type: String, default: "" }, // e.g. "Clinical Psychologist"
+  experience: { type: Number, default: 0 },      // Years of experience
+  fees: { type: Number, default: 0 },            // Per session charge
+  about: { type: String, default: "" }           // Short Bio
 
 }, { timestamps: true });
 

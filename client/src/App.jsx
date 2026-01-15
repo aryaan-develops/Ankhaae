@@ -7,6 +7,9 @@ import Dashboard from './pages/Dashboard';
 import Journal from './pages/Journal';
 import JournalHistory from './pages/JournalHistory';
 import Panic from './pages/Panic';
+import FindDoctor from './pages/FindDoctor';
+import Chat from './pages/Chat';
+import MyPatients from './pages/MyPatients';
 
 function App() {
   return (
@@ -31,6 +34,9 @@ function App() {
         <Route path="/journal" element={<Journal />} />
         <Route path="/journal-history" element={<JournalHistory />} />
         <Route path="/panic" element={<Panic />} />
+        <Route path="/find-doctor" element={<FindDoctor />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/my-patients" element={<MyPatients />} />
       </Routes>
     </BrowserRouter>
   );
