@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { LogOut, BookOpen, AlertCircle, Quote, Trophy, Instagram, Save, X, Users, Lock, Copy, Check, Stethoscope } from 'lucide-react'; // <--- Stethoscope add kiya
+import { LogOut, BookOpen, AlertCircle, Quote, Trophy, Instagram, Save, X, Users, Lock, Copy, Check, Stethoscope } from 'lucide-react'; 
 import { useNavigate } from 'react-router-dom';
 import desktopBg from '../assets/dashboard.jpg'; 
 import mobileBg from '../assets/signup8.png';
@@ -37,6 +37,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchUserAndData = async () => {
+      // 1. Pehle LocalStorage se data uthao taaki page turant dikhe
       const localData = localStorage.getItem('user');
       if (!localData) {
         navigate('/login'); return;
@@ -45,17 +46,30 @@ const Dashboard = () => {
       const parsedUser = JSON.parse(localData);
       setTodaysQuote(quotes[Math.floor(Math.random() * quotes.length)]);
 
+      // Pehle local data set kar do
+      setUser(parsedUser);
+      setXp(parsedUser.xp || 0);
+      setLevel(parsedUser.level || 1);
+      setProgress(((parsedUser.xp || 0) % 50) / 50 * 100);
+
       try {
+        // 2. Phir Background mein Live Data fetch karo (Role update check karne ke liye)
         const userId = parsedUser._id || parsedUser.id;
         const res = await axios.get(`https://ankahee-api.onrender.com/api/auth/user/${userId}`);
         const freshUser = res.data;
+        
+        // State update karo fresh data se
         setUser(freshUser);
         setXp(freshUser.xp || 0);
         setLevel(freshUser.level || 1);
         setInstaId(freshUser.instagramId || "");
         setProgress(((freshUser.xp || 0) % 50) / 50 * 100);
+
+        // LocalStorage ko bhi update kar do taaki agli baar fresh mile
+        localStorage.setItem('user', JSON.stringify(freshUser));
+
       } catch (err) {
-        setUser(parsedUser);
+        console.error("Network Error: Using local data only.");
       }
     };
     fetchUserAndData();
@@ -168,7 +182,7 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* --- ACTION BUTTONS (Updated Grid for 4 Buttons) --- */}
+      {/* --- ACTION BUTTONS --- */}
       <div className="z-10 w-full max-w-4xl p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 shrink-0">
         
         {/* 1. Journal */}
@@ -213,12 +227,22 @@ const Dashboard = () => {
           <div className="text-left"><span className="font-medium text-lg text-red-100 block">Panic</span><span className="text-xs text-gray-400">Get Calm</span></div>
         </motion.button>
 
-        {/* 4. THERAPIST (NEW BUTTON) */}
-        <motion.button onClick={() => navigate('/find-doctor')} whileHover={{ scale: 1.03, backgroundColor: "rgba(6, 182, 212, 0.2)" }} whileTap={{ scale: 0.98 }}
-            className="flex items-center p-4 bg-black/40 backdrop-blur-lg border border-white/10 rounded-2xl transition-all group cursor-pointer gap-4 justify-center sm:justify-start">
-            <div className="bg-cyan-500/20 p-3 rounded-full group-hover:bg-cyan-500/30 transition-colors"><Stethoscope size={24} className="text-cyan-300" /></div>
-            <div className="text-left"><span className="font-medium text-lg block text-white">Therapist</span><span className="text-xs text-gray-400">Get Help</span></div>
-        </motion.button>
+        {/* 4. DOCTOR / PATIENT TOGGLE (Logic applied here) */}
+        {user.role === 'doctor' || user.isDoctor ? (
+            // DOCTOR DEKHEGA: "My Patients"
+            <motion.button onClick={() => navigate('/my-patients')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}
+                className="flex items-center p-4 bg-cyan-900/40 border border-cyan-500/30 rounded-2xl transition-all gap-4 justify-center sm:justify-start">
+                <div className="bg-cyan-500/20 p-3 rounded-full"><Users size={24} className="text-cyan-300" /></div>
+                <div className="text-left"><span className="font-medium text-lg block text-white">My Patients</span><span className="text-xs text-gray-400">Check Messages</span></div>
+            </motion.button>
+        ) : (
+            // USER DEKHEGA: "Find Therapist"
+            <motion.button onClick={() => navigate('/find-doctor')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}
+                className="flex items-center p-4 bg-black/40 backdrop-blur-lg border border-white/10 rounded-2xl transition-all gap-4 justify-center sm:justify-start">
+                <div className="bg-cyan-500/20 p-3 rounded-full"><Stethoscope size={24} className="text-cyan-300" /></div>
+                <div className="text-left"><span className="font-medium text-lg block text-white">Therapist</span><span className="text-xs text-gray-400">Get Help</span></div>
+            </motion.button>
+        )}
 
       </div>
 
