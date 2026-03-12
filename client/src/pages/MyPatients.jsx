@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { ArrowLeft, MessageCircle, User } from 'lucide-react';
+import api from '../api';
+import { ArrowLeft, MessageCircle, User, FilePlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -16,7 +16,7 @@ const MyPatients = () => {
     const fetchPatients = async () => {
       try {
         // Fetch users who chatted with me
-        const res = await axios.get(`https://ankahee-api.onrender.com/api/doctor/patients/${doctor._id || doctor.id}`);
+        const res = await api.get(`/doctor/patients/${doctor._id || doctor.id}`);
         setPatients(res.data);
       } catch (err) {
         console.error(err);
@@ -66,9 +66,14 @@ const MyPatients = () => {
                         <p className="text-xs text-gray-500">Patient</p>
                     </div>
                 </div>
-                <button onClick={() => openChat(p)} className="p-3 bg-cyan-600 rounded-full hover:bg-cyan-500 transition">
-                    <MessageCircle size={20} />
-                </button>
+                <div className="flex gap-2">
+                    <button onClick={() => navigate('/issue-medical', { state: { patientId: p._id, patientName: p.username } })} className="p-3 bg-purple-600 rounded-full hover:bg-purple-500 transition shadow-lg">
+                        <FilePlus size={20} />
+                    </button>
+                    <button onClick={() => openChat(p)} className="p-3 bg-cyan-600 rounded-full hover:bg-cyan-500 transition shadow-lg">
+                        <MessageCircle size={20} />
+                    </button>
+                </div>
             </div>
             ))}
         </div>

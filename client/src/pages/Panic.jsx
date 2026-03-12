@@ -78,9 +78,30 @@ const Panic = () => {
 
       {/* --- BREATHING CIRCLE --- */}
       <div className={`relative z-10 flex flex-col items-center justify-center mb-8 transition-all duration-500 ${showGrounding || showHelpline || showSolver ? 'blur-sm opacity-50' : ''}`}>
-        <motion.div animate={{ scale: phase === 'Inhale' ? 1.5 : phase === 'Exhale' ? 1 : 1.5, opacity: phase === 'Hold' ? 0.8 : 1 }} transition={{ duration: 4, ease: "easeInOut" }} className="w-64 h-64 rounded-full bg-gradient-to-br from-blue-500/40 to-purple-500/40 blur-2xl absolute"></motion.div>
-        <motion.div animate={{ scale: phase === 'Inhale' ? 1.2 : phase === 'Exhale' ? 0.8 : 1.2 }} transition={{ duration: 4, ease: "easeInOut" }} className="w-48 h-48 rounded-full border-4 border-blue-300/30 flex items-center justify-center shadow-[0_0_50px_rgba(59,130,246,0.3)] bg-black/20 backdrop-blur-md relative z-20">
-          <motion.span key={phase} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-3xl font-serif font-bold text-blue-100 tracking-wider">{phase}</motion.span>
+        <motion.div 
+           animate={{ 
+             scale: phase === 'Inhale' ? 1.6 : phase === 'Exhale' ? 1 : 1.6, 
+             opacity: phase === 'Hold' ? 0.6 : 1 
+           }} 
+           transition={{ duration: 4, ease: "easeInOut" }} 
+           className="w-72 h-72 rounded-full bg-gradient-to-br from-blue-500/20 via-cyan-500/10 to-transparent blur-3xl absolute"
+        ></motion.div>
+        
+        <motion.div 
+           animate={{ scale: phase === 'Inhale' ? 1.2 : phase === 'Exhale' ? 0.8 : 1.2 }} 
+           transition={{ duration: 4, ease: "easeInOut" }} 
+           className="w-56 h-56 rounded-full border border-white/20 flex items-center justify-center shadow-[0_0_80px_rgba(59,130,246,0.2)] bg-white/5 backdrop-blur-2xl relative z-20 group"
+        >
+           <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/10 to-transparent opacity-50"></div>
+           <motion.div 
+              key={phase} 
+              initial={{ opacity: 0, y: 10 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              className="flex flex-col items-center"
+           >
+              <span className="text-4xl font-serif font-black text-white tracking-widest uppercase drop-shadow-lg">{phase}</span>
+              <span className="text-[10px] text-blue-300/60 mt-2 uppercase tracking-[0.3em]">Breathe Deep</span>
+           </motion.div>
         </motion.div>
       </div>
 

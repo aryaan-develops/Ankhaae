@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, CreditCard, Lock, CheckCircle, Smartphone, QrCode } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '../api';
 
 const PaymentModal = ({ doctor, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -9,21 +10,40 @@ const PaymentModal = ({ doctor, onClose, onSuccess }) => {
   const [method, setMethod] = useState('card'); // 'card' or 'upi'
   const [upiId, setUpiId] = useState('');
 
-  const handlePay = (e) => {
+  const handlePay = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Fake Processing (2 seconds)
-    setTimeout(() => {
-      setLoading(false);
-      setStep('success');
-      
-      // 1.5 second baad close
-      setTimeout(() => {
-        onSuccess();
-        onClose();
-      }, 1500);
-    }, 2000);
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        toast.error("User session expired!");
+        setLoading(false);
+        return;
+    }
+
+    // Process Booking
+    try {
+        await api.post('/doctor/book', {
+            patientId: user._id || user.id,
+            doctorId: doctor._id || doctor.id,
+            date: new Date(),
+            amount: doctor.fees,
+            paymentId: `PAY-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+        });
+
+        setLoading(false);
+        setStep('success');
+        
+        // 1.5 second baad close
+        setTimeout(() => {
+          onSuccess();
+          onClose();
+        }, 1500);
+
+    } catch (error) {
+        toast.error("Booking Failed! Refund initiated.");
+        setLoading(false);
+    }
   };
 
   // Dynamic QR Code URL (Google Chart API ya QRServer use kar sakte hain)

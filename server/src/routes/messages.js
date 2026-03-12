@@ -21,4 +21,20 @@ router.get('/:user1Id/:user2Id', async (req, res) => {
   }
 });
 
+// Delete chat history between two users
+router.delete('/:user1Id/:user2Id', async (req, res) => {
+  try {
+    const { user1Id, user2Id } = req.params;
+    await Message.deleteMany({
+      $or: [
+        { senderId: user1Id, receiverId: user2Id },
+        { senderId: user2Id, receiverId: user1Id }
+      ]
+    });
+    res.json({ message: "Chat history deleted successfully" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 module.exports = router;

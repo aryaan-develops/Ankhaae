@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { ArrowLeft, Calendar, Trophy, AlertTriangle, Trash2, Sparkles } from 'lucide-react'; // Sparkles icon add kiya
 import { useNavigate } from 'react-router-dom';
 import desktopBg from '../assets/dashboard.jpg'; 
@@ -18,7 +18,7 @@ const JournalHistory = () => {
       const user = JSON.parse(userData);
       try {
         const userId = user._id || user.id; 
-        const res = await axios.get(`https://ankahee-api.onrender.com/api/journal/user/${userId}`);
+        const res = await api.get(`/journal/user/${userId}`);
         setJournals(res.data);
       } catch (err) {
         console.error(err);
@@ -32,7 +32,7 @@ const JournalHistory = () => {
   const handleDelete = async (journalId) => {
     if (!window.confirm("Delete this memory?")) return;
     try {
-      await axios.delete(`https://ankahee-api.onrender.com/api/journal/${journalId}`);
+      await api.delete(`/journal/${journalId}`);
       setJournals(journals.filter((j) => j._id !== journalId));
     } catch (err) { alert("Delete failed"); }
   };

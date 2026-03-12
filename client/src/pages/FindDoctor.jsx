@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { ArrowLeft, Stethoscope, Clock, IndianRupee, MessageCircle, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -19,7 +19,8 @@ const FindDoctor = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get('https://ankahee-api.onrender.com/api/doctor/all');
+        const res = await api.get('/doctor/all');
+        console.log("Docs from API:", res.data);
         setDoctors(res.data);
       } catch (err) {
         console.error(err);

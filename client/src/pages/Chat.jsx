@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import axios from 'axios'; // Axios import kiya history ke liye
-import { Send, ArrowLeft } from 'lucide-react';
+import api, { SOCKET_URL } from '../api';
+import { Send, ArrowLeft, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
-const socket = io.connect("https://ankahee-api.onrender.com"); 
+const socket = io.connect(SOCKET_URL); 
 
 const Chat = () => {
   const location = useLocation();
@@ -32,7 +33,7 @@ const Chat = () => {
     // 2. FETCH OLD MESSAGES (History) 📜
     const fetchHistory = async () => {
         try {
-            const res = await axios.get(`https://ankahee-api.onrender.com/api/messages/${userId}/${doctorId}`);
+            const res = await api.get(`/messages/${userId}/${doctorId}`);
             // Format messages for UI
             const formattedMessages = res.data.map(msg => ({
                 room: room,
@@ -80,18 +81,34 @@ const Chat = () => {
     }
   };
 
+  const deleteChat = async () => {
+    if (window.confirm("Are you sure you want to delete this chat history? This cannot be undone.")) {
+      try {
+        await api.delete(`/messages/${userId}/${doctorId}`);
+        setMessageList([]);
+        toast.success("Chat history cleared!");
+      } catch (err) {
+        toast.error("Failed to delete chat.");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center text-white p-4">
       <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-2xl h-[80vh] flex flex-col">
         
         {/* Header */}
-        <div className="bg-cyan-900/30 p-4 border-b border-white/10 flex items-center gap-3">
-            <button onClick={() => navigate(-1)}><ArrowLeft size={20}/></button>
-            <div>
-                {/* Yahan Naam dikhna chahiye */}
-                <h3 className="font-bold text-lg">{doctorName || "Chat"}</h3> 
-                <p className="text-xs text-green-400">Online</p>
+        <div className="bg-cyan-900/30 p-4 border-b border-white/10 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+                <button onClick={() => navigate(-1)}><ArrowLeft size={20}/></button>
+                <div>
+                    <h3 className="font-bold text-lg">{doctorName || "Chat"}</h3> 
+                    <p className="text-xs text-green-400">Online</p>
+                </div>
             </div>
+            <button onClick={deleteChat} className="p-2 text-red-400 hover:bg-red-500/10 rounded-full transition">
+                <Trash2 size={20} />
+            </button>
         </div>
 
         {/* Chat Body */}

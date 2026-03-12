@@ -27,7 +27,10 @@ app.use('/api/messages', require('./routes/messages'));
 // Database Connection
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
+        await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 5000,
+            family: 4
+        });
         console.log("✅ MongoDB Connected: Magical Database Ready");
     } catch (err) {
         console.error("❌ DB Connection Error:", err);

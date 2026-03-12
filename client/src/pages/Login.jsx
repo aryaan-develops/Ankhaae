@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { Leaf, Sprout } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom"; // useNavigate import kiya
@@ -13,7 +13,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('https://ankahee-api.onrender.com/api/auth/login', { email, password });
+      const res = await api.post('/auth/login', { email, password });
       
       // Data save karo
       localStorage.setItem('token', res.data.token);

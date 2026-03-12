@@ -2,14 +2,25 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Message = require('../models/Message');
+const Appointment = require('../models/Appointment');
+const Prescription = require('../models/Prescription');
+const MedicalReport = require('../models/MedicalReport');
+const Payment = require('../models/Payment');
 
 // 1. GET ALL DOCTORS (Search Feature)
 router.get('/all', async (req, res) => {
   try {
-    // Sirf wahi users dhundo jinka role 'doctor' hai
-    const doctors = await User.find({ role: 'doctor' }).select('-password');
+    // Find users who are either marked as 'doctor' role OR have isDoctor: true
+    const doctors = await User.find({ 
+      $or: [
+        { role: 'doctor' },
+        { isDoctor: true }
+      ]
+    }).select('-password');
+    console.log(`Doctors found for ${req.url}:`, doctors.length);
     res.json(doctors);
   } catch (err) {
+    console.error("Fetch doctors error:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
@@ -35,11 +46,119 @@ router.put('/upgrade/:userId', async (req, res) => {
   }
 });
 
-// 3. BOOK APPOINTMENT (Simple Storage for now)
-// Note: Iske liye alag Model chahiye hoga, abhi bas console log karenge
+// 3. BOOK APPOINTMENT
 router.post('/book', async (req, res) => {
-    // Future mein yahan 'Appointment' model banega
-    res.json({ message: "Appointment Request Sent! Doctor will contact you." });
+    try {
+        const { patientId, doctorId, date, amount, paymentId } = req.body;
+
+        // 1. Create Appointment
+        const appointment = new Appointment({
+            patient: patientId,
+            doctor: doctorId,
+            date,
+            amount,
+            status: 'confirmed', // Assuming pre-paid for now
+            paymentStatus: 'paid'
+        });
+        await appointment.save();
+
+        // 2. Save Payment Record
+        const payment = new Payment({
+            user: patientId,
+            amount,
+            purpose: `Appointment with Doctor`,
+            paymentId,
+            status: 'success'
+        });
+        await payment.save();
+
+        res.status(201).json({ message: "Appointment Booked Successfully!", appointment });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Booking Failed" });
+    }
+});
+
+// 4. GIVE PRESCRIPTION
+router.post('/prescription', async (req, res) => {
+    try {
+        const { patientId, doctorId, medicines, generalNotes } = req.body;
+        
+        // 1. Save Prescription in DB
+        const prescription = new Prescription({
+            patient: patientId,
+            doctor: doctorId,
+            medicines,
+            generalNotes
+        });
+        await prescription.save();
+
+        // 2. Automically send a message to the patient (Chat notification)
+        const doctor = await User.findById(doctorId);
+        const notification = new Message({
+            senderId: doctorId,
+            receiverId: patientId,
+            text: `🩺 NEW PRESCRIPTION: Dr. ${doctor?.username || 'Doctor'} has issued a new prescription for you. Check your Medical History.`
+        });
+        await notification.save();
+
+        res.status(201).json({ message: "Prescription Saved & Patient Notified!", prescription });
+    } catch (err) {
+        console.error("Prescription Error:", err);
+        res.status(500).json({ message: "Failed to save prescription" });
+    }
+});
+
+// 5. GIVE REPORT
+router.post('/report', async (req, res) => {
+    try {
+        const { patientId, doctorId, title, description, reportUrl } = req.body;
+        
+        // 1. Save Report in DB
+        const report = new MedicalReport({
+            patient: patientId,
+            doctor: doctorId,
+            title,
+            description,
+            reportUrl
+        });
+        await report.save();
+
+        // 2. Automically send a message to the patient (Chat notification)
+        const doctor = await User.findById(doctorId);
+        const notification = new Message({
+            senderId: doctorId,
+            receiverId: patientId,
+            text: `📄 NEW MEDICAL REPORT: Dr. ${doctor?.username || 'Doctor'} uploaded a report: "${title}". Check your Medical History.`
+        });
+        await notification.save();
+
+        res.status(201).json({ message: "Report Saved & Patient Notified!", report });
+    } catch (err) {
+        console.error("Report Error:", err);
+        res.status(500).json({ message: "Failed to save report" });
+    }
+});
+
+// 6. GET MEDICAL HISTORY (For Patient)
+router.get('/history/:patientId', async (req, res) => {
+    try {
+        const prescriptions = await Prescription.find({ patient: req.params.patientId }).populate('doctor', 'username specialization').sort({ createdAt: -1 });
+        const reports = await MedicalReport.find({ patient: req.params.patientId }).populate('doctor', 'username specialization').sort({ createdAt: -1 });
+        res.json({ prescriptions, reports });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to fetch history" });
+    }
+});
+
+// 7. GET PAYMENT HISTORY
+router.get('/payments/:userId', async (req, res) => {
+    try {
+        const payments = await Payment.find({ user: req.params.userId }).sort({ createdAt: -1 });
+        res.json(payments);
+    } catch (err) {
+        res.status(500).json({ message: "Failed to fetch payments" });
+    }
 });
 
 router.get('/patients/:doctorId', async (req, res) => {

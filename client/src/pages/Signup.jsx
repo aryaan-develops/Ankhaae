@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion, AnimatePresence } from 'framer-motion'; // AnimatePresence add kiya animation ke liye
 import { Sprout, Stethoscope } from 'lucide-react'; // Stethoscope icon doctor ke liye
 import { Link, useNavigate } from 'react-router-dom';
@@ -28,7 +28,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       // Backend request
-      await axios.post('https://ankahee-api.onrender.com/api/auth/signup', formData);
+      await api.post('/auth/signup', formData);
       
       // Success Message based on Role
       if (formData.role === 'doctor') {

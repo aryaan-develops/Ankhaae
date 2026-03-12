@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { LogOut, BookOpen, AlertCircle, Quote, Trophy, Instagram, Save, X, Users, Lock, Copy, Check, Stethoscope } from 'lucide-react'; 
+import { LogOut, BookOpen, AlertCircle, Quote, Trophy, Instagram, Save, X, Users, Lock, Copy, Check, Stethoscope, Flower2, Sparkles, MessageSquareHeart, CreditCard, FileText } from 'lucide-react'; 
 import { useNavigate } from 'react-router-dom';
-import desktopBg from '../assets/dashboard.jpg'; 
-import mobileBg from '../assets/signup8.png';
+// Note: Images/Videos are now used from the public folder directly
 
 const quotes = [
   "You don’t have to control your thoughts. You just have to stop letting them control you.",
@@ -34,6 +33,19 @@ const Dashboard = () => {
   const [xp, setXp] = useState(0);
   const [level, setLevel] = useState(1);
   const [progress, setProgress] = useState(0);
+  const [buddyMsg, setBuddyMsg] = useState("");
+
+  const buddyPhrases = [
+    "Remember, your healing takes time. You're doing great!",
+    "One journal entry at a time, you're growing stronger.",
+    "Proud of you for checking in today! 🌱",
+    "How are you really feeling? The garden is listening.",
+    "Small steps lead to big blooms. Keep going!"
+  ];
+
+  useEffect(() => {
+    setBuddyMsg(buddyPhrases[Math.floor(Math.random() * buddyPhrases.length)]);
+  }, []);
 
   useEffect(() => {
     const fetchUserAndData = async () => {
@@ -55,7 +67,7 @@ const Dashboard = () => {
       try {
         // 2. Phir Background mein Live Data fetch karo (Role update check karne ke liye)
         const userId = parsedUser._id || parsedUser.id;
-        const res = await axios.get(`https://ankahee-api.onrender.com/api/auth/user/${userId}`);
+        const res = await api.get(`/auth/user/${userId}`);
         const freshUser = res.data;
         
         // State update karo fresh data se
@@ -85,7 +97,7 @@ const Dashboard = () => {
     setIsSavingSocial(true);
     try {
         const userId = user._id || user.id;
-        await axios.put('https://ankahee-api.onrender.com/api/auth/update-insta', { userId, instagramId: instaId });
+        await api.put('/auth/update-insta', { userId, instagramId: instaId });
         toast.success("Profile Updated! Ready to connect. 🤝");
         setShowSocialModal(false);
     } catch (error) { 
@@ -111,7 +123,7 @@ const Dashboard = () => {
     setTimeout(async () => {
         try {
             const userId = user._id || user.id;
-            const res = await axios.get(`https://ankahee-api.onrender.com/api/auth/find-friend/${userId}`);
+            const res = await api.get(`/auth/find-friend/${userId}`);
             setMatchedUser(res.data);
         } catch (error) {
             console.error(error);
@@ -132,117 +144,183 @@ const Dashboard = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen text-white relative flex flex-col items-center font-sans overflow-y-auto">
+    <div className="min-h-screen text-white relative flex flex-col items-center font-sans overflow-y-auto pb-20 selection:bg-cyan-500/30">
       
-      <div className="fixed top-0 left-0 w-full h-full -z-20">
-        <img className="hidden md:block w-full h-full object-cover bg-breathe-animate" src={desktopBg} alt="Desktop Background" />
-        <img className="block md:hidden w-full h-full object-cover bg-breathe-animate" src={mobileBg} alt="Mobile Background" />
+      {/* Background Layer (Fixed at the very bottom) */}
+      <div className="fixed inset-0 -z-30 overflow-hidden bg-[#020202]">
+        {/* Cinematic Video */}
+        <video 
+          autoPlay loop muted playsInline 
+          className="w-full h-full object-cover opacity-30 scale-110 blur-[2px] absolute inset-0"
+        >
+          <source src="/dashboard_bg.mp4" type="video/mp4" />
+        </video>
+        
+        {/* Fallback Image with Motion */}
+        <img 
+          src="/signup7.png" 
+          alt="" 
+          className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-lighten bg-breathe-animate"
+        />
+        
+        {/* Radial Glow for Depth */}
+        <div className="absolute inset-x-0 top-0 h-[50vh] bg-gradient-to-b from-cyan-500/10 to-transparent pointer-events-none"></div>
       </div>
-      <div className="fixed top-0 left-0 w-full h-full bg-black/60 -z-10"></div>
+
+      {/* Overlays for Contrast */}
+      <div className="fixed inset-0 bg-black/40 -z-20"></div>
+      <div className="fixed inset-0 backdrop-blur-[1px] -z-20"></div>
 
       {/* Header */}
-      <div className="z-10 w-full max-w-4xl p-6 flex justify-between items-center mt-4 shrink-0">
-        <div className="bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
-          <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">🌱</div>
-          <h1 className="text-lg font-medium">Hi, {user.username}</h1>
+      <motion.div 
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="z-10 w-full max-w-6xl p-6 flex justify-between items-center"
+      >
+        <div className="glass-premium px-5 py-2 rounded-full flex items-center gap-3">
+          <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center animate-pulse">🌱</div>
+          <h1 className="text-sm font-bold tracking-tight">Hi, {user.username}</h1>
         </div>
         <div className="flex gap-3">
-            <button onClick={() => setShowSocialModal(true)} className="flex items-center justify-center w-10 h-10 text-white/70 hover:text-pink-400 bg-black/30 backdrop-blur-md rounded-full border border-white/10 transition-all hover:bg-pink-500/20">
-                <Instagram size={18} />
+            <button onClick={() => setShowSocialModal(true)} className="flex items-center justify-center w-10 h-10 glass-premium rounded-full hover:bg-pink-500/20 transition-all">
+                <Instagram size={18} className="text-white/70" />
             </button>
-            <button onClick={handleLogout} className="flex items-center gap-2 text-white/70 hover:text-white bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 transition-all hover:bg-red-500/20">
-                <LogOut size={18} /> <span className="hidden sm:inline text-sm">Logout</span>
+            <button onClick={handleLogout} className="flex items-center gap-2 glass-premium px-5 py-2 rounded-full hover:bg-red-500/20 transition-all text-white/70 hover:text-white">
+                <LogOut size={16} /> <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">Logout</span>
             </button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Main Content */}
-      <div className="flex-grow flex flex-col items-center justify-center relative z-10 w-full px-4 py-6 md:py-0">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
-          className="bg-black/40 backdrop-blur-xl p-6 md:p-8 rounded-3xl border border-white/10 w-full max-w-4xl shadow-2xl relative overflow-hidden flex flex-col md:grid md:grid-cols-3 gap-8">
+      {/* --- BENTO GRID START --- */}
+      <div className="z-10 w-full max-w-6xl px-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        
+        {/* 1. HERO CARD (Quote) */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="md:col-span-2 lg:col-span-3 glass-premium p-10 rounded-[40px] relative overflow-hidden group min-h-[300px] flex flex-col justify-center"
+        >
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-700"></div>
+            <Quote size={64} className="text-white/5 absolute top-8 left-8" />
             
-            <div className="md:col-span-2 flex flex-col justify-center text-center md:text-left order-1">
-                <div className="flex justify-center md:justify-start"><Quote size={32} className="text-white/40 mb-4" /></div>
-                <h2 className="text-xl md:text-3xl font-serif italic leading-relaxed text-white/90">"{todaysQuote}"</h2>
-                <p className="text-sm text-white/50 mt-4">— Daily Insight</p>
-            </div>
-
-            <div className="bg-white/5 rounded-2xl p-6 flex flex-col items-center justify-center border border-white/10 order-2 relative overflow-hidden">
-                <div className={`absolute inset-0 opacity-20 bg-gradient-to-br ${level > 1 ? 'from-purple-500 to-blue-500' : 'from-green-500 to-emerald-500'}`}></div>
-                <div className="relative z-10 flex flex-col items-center w-full">
-                    <div className="bg-yellow-500/20 p-4 rounded-full mb-3 shadow-[0_0_15px_rgba(234,179,8,0.3)]"><Trophy size={28} className="text-yellow-300" /></div>
-                    <h3 className="text-lg font-semibold">Level {level}</h3>
-                    <p className="text-green-300 font-medium text-sm mb-3">{level === 1 ? "The Seedling 🌱" : "The Sapling 🌿"}</p>
-                    <div className="w-full h-3 bg-gray-700/50 rounded-full mt-2 overflow-hidden border border-white/5 relative">
-                        <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 1.5, ease: "easeOut" }} className="h-full bg-gradient-to-r from-green-400 to-emerald-600 shadow-[0_0_10px_#4ade80]"></motion.div>
-                    </div>
-                    <div className="flex justify-between w-full text-xs text-gray-400 mt-2"><span>{xp % 50} / 50 XP</span><span>Next Lvl</span></div>
-                </div>
+            <h2 className="text-2xl md:text-4xl font-serif italic leading-tight text-white/90 relative z-10 pr-10">
+                "{todaysQuote}"
+            </h2>
+            <div className="flex items-center gap-3 mt-8 relative z-10">
+                <div className="w-10 h-[1px] bg-white/20"></div>
+                <p className="text-xs font-bold text-white/40 uppercase tracking-[0.3em]">Daily Insight</p>
             </div>
         </motion.div>
-      </div>
 
-      {/* --- ACTION BUTTONS --- */}
-      <div className="z-10 w-full max-w-4xl p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 shrink-0">
-        
-        {/* 1. Journal */}
-        <motion.button onClick={() => navigate('/journal')} whileHover={{ scale: 1.03, backgroundColor: "rgba(59, 130, 246, 0.2)" }} whileTap={{ scale: 0.98 }}
-          className="flex items-center p-4 bg-black/40 backdrop-blur-lg border border-white/10 rounded-2xl transition-all group cursor-pointer gap-4 justify-center sm:justify-start">
-          <div className="bg-blue-500/20 p-3 rounded-full group-hover:bg-blue-500/30 transition-colors"><BookOpen size={24} className="text-blue-300" /></div>
-          <div className="text-left"><span className="font-medium text-lg block">Journal</span><span className="text-xs text-gray-400">Write it out</span></div>
-        </motion.button>
-
-        {/* 2. FIND FRIEND */}
-        <motion.button 
-          onClick={handleFindFriend} 
-          whileHover={level >= 5 ? { scale: 1.03, backgroundColor: "rgba(236, 72, 153, 0.2)" } : {}} 
-          whileTap={level >= 5 ? { scale: 0.98 } : {}}
-          className={`flex items-center p-4 backdrop-blur-lg border rounded-2xl transition-all group cursor-pointer gap-4 justify-center sm:justify-start ${
-            level < 5 
-              ? "bg-gray-800/40 border-gray-700 opacity-70 cursor-not-allowed" 
-              : "bg-black/40 border-white/10"
-          }`}
+        {/* 2. PROGRESS CARD */}
+        <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="lg:col-span-1 glass-premium glass-glow-green p-8 rounded-[40px] flex flex-col items-center justify-between text-center min-h-[300px]"
         >
-          <div className={`p-3 rounded-full transition-colors ${
-            level < 5 
-              ? "bg-gray-700 text-gray-500" 
-              : "bg-pink-500/20 group-hover:bg-pink-500/30" 
-          }`}>
-             {level < 5 ? <Lock size={24} /> : <Users size={24} className="text-pink-300" />}
-          </div>
-          <div className="text-left">
-            <span className={`font-medium text-lg block ${level < 5 ? "text-gray-400" : "text-white"}`}>
-                {level < 5 ? "Locked" : "Connect"}
-            </span>
-            <span className="text-xs text-gray-500">
-                {level < 5 ? "Unlock at Lvl 5" : "Find a buddy"}
-            </span>
-          </div>
-        </motion.button>
+            <div className="bg-yellow-500/10 p-5 rounded-full shadow-[0_0_30px_rgba(234,179,8,0.2)]">
+                <Trophy size={32} className="text-yellow-400" />
+            </div>
+            
+            <div>
+                <h3 className="text-xl font-bold">Level {level}</h3>
+                <p className="text-xs text-green-400 font-bold uppercase tracking-widest mt-1">
+                    {level === 1 ? "Seedling" : "Rising Sapling"}
+                </p>
+            </div>
 
-        {/* 3. Panic */}
-        <motion.button onClick={() => navigate('/panic')} whileHover={{ scale: 1.03, backgroundColor: "rgba(239, 68, 68, 0.2)" }} whileTap={{ scale: 0.98 }}
-          className="flex items-center p-4 bg-black/40 backdrop-blur-lg border border-white/10 rounded-2xl transition-all group cursor-pointer gap-4 justify-center sm:justify-start">
-           <div className="bg-red-500/20 p-3 rounded-full group-hover:bg-red-500/30 transition-colors"><AlertCircle size={24} className="text-red-300" /></div>
-          <div className="text-left"><span className="font-medium text-lg text-red-100 block">Panic</span><span className="text-xs text-gray-400">Get Calm</span></div>
-        </motion.button>
+            <div className="w-full space-y-2">
+                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                    <motion.div 
+                        initial={{ width: 0 }} 
+                        animate={{ width: `${progress}%` }} 
+                        className="h-full bg-gradient-to-r from-green-400 to-emerald-600 shadow-[0_0_15px_#10b981]"
+                    ></motion.div>
+                </div>
+                <div className="flex justify-between text-[10px] text-white/30 font-bold uppercase tracking-tighter">
+                    <span>{xp % 50} / 50 XP</span>
+                    <span>To Level {level + 1}</span>
+                </div>
+            </div>
 
-        {/* 4. DOCTOR / PATIENT TOGGLE (Logic applied here) */}
-        {user.role === 'doctor' || user.isDoctor ? (
-            // DOCTOR DEKHEGA: "My Patients"
-            <motion.button onClick={() => navigate('/my-patients')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}
-                className="flex items-center p-4 bg-cyan-900/40 border border-cyan-500/30 rounded-2xl transition-all gap-4 justify-center sm:justify-start">
-                <div className="bg-cyan-500/20 p-3 rounded-full"><Users size={24} className="text-cyan-300" /></div>
-                <div className="text-left"><span className="font-medium text-lg block text-white">My Patients</span><span className="text-xs text-gray-400">Check Messages</span></div>
+            <button 
+                onClick={() => navigate('/mood-bloom')}
+                className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 group"
+            >
+                <Flower2 size={14} className="group-hover:rotate-45 transition" /> View Mood Bloom
+            </button>
+        </motion.div>
+
+        {/* 3. QUICK ACTION TILES */}
+        <div className="md:col-span-3 lg:col-span-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            
+            {/* Journal */}
+            <motion.button 
+                whileHover={{ y: -5, backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
+                onClick={() => navigate('/journal')}
+                className="glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group"
+            >
+                <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition"><BookOpen size={24}/></div>
+                <div><span className="block font-bold text-sm">Journal</span><span className="text-[10px] text-white/40 uppercase font-black">Reflect</span></div>
             </motion.button>
-        ) : (
-            // USER DEKHEGA: "Find Therapist"
-            <motion.button onClick={() => navigate('/find-doctor')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}
-                className="flex items-center p-4 bg-black/40 backdrop-blur-lg border border-white/10 rounded-2xl transition-all gap-4 justify-center sm:justify-start">
-                <div className="bg-cyan-500/20 p-3 rounded-full"><Stethoscope size={24} className="text-cyan-300" /></div>
-                <div className="text-left"><span className="font-medium text-lg block text-white">Therapist</span><span className="text-xs text-gray-400">Get Help</span></div>
+
+            {/* Panic */}
+            <motion.button 
+                whileHover={{ y: -5, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
+                onClick={() => navigate('/panic')}
+                className="glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group border-red-500/20"
+            >
+                <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-400 group-hover:scale-110 transition"><AlertCircle size={24}/></div>
+                <div><span className="block font-bold text-sm">Panic</span><span className="text-[10px] text-white/40 uppercase font-black">Get Calm</span></div>
             </motion.button>
-        )}
+
+            {/* Connect / Friends */}
+            <motion.button 
+                whileHover={level >= 5 ? { y: -5, backgroundColor: 'rgba(236, 72, 153, 0.1)' } : {}}
+                onClick={handleFindFriend}
+                className={`glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group ${level < 5 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`}
+            >
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition ${level < 5 ? 'bg-gray-800 text-gray-400' : 'bg-pink-500/10 text-pink-400'}`}>
+                    {level < 5 ? <Lock size={24}/> : <Users size={24}/>}
+                </div>
+                <div><span className="block font-bold text-sm">{level < 5 ? 'Locked' : 'Connect'}</span><span className="text-[10px] text-white/40 uppercase font-black">{level < 5 ? 'Lvl 5 Req' : 'Find Buddy'}</span></div>
+            </motion.button>
+
+            {/* Therapist / Patients */}
+            <motion.button 
+                whileHover={{ y: -5, backgroundColor: 'rgba(6, 182, 212, 0.1)' }}
+                onClick={() => navigate(user.role === 'doctor' ? '/my-patients' : '/find-doctor')}
+                className="glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group"
+            >
+                <div className="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
+                    {user.role === 'doctor' ? <Users size={24}/> : <Stethoscope size={24}/>}
+                </div>
+                <div><span className="block font-bold text-sm tracking-tighter">{user.role === 'doctor' ? 'Patients' : 'Therapist'}</span><span className="text-[10px] text-white/40 uppercase font-black">Healing</span></div>
+            </motion.button>
+
+            {/* Medical Records */}
+            <motion.button 
+                whileHover={{ y: -5, backgroundColor: 'rgba(168, 85, 247, 0.1)' }}
+                onClick={() => navigate('/medical-history')}
+                className="glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group"
+            >
+                <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 group-hover:scale-110 transition"><FileText size={24}/></div>
+                <div><span className="block font-bold text-sm">{user.role === 'doctor' ? 'Records' : 'History'}</span><span className="text-[10px] text-white/40 uppercase font-black">Logs</span></div>
+            </motion.button>
+
+            {/* Billing */}
+            <motion.button 
+                whileHover={{ y: -5, backgroundColor: 'rgba(16, 185, 129, 0.1)' }}
+                onClick={() => navigate('/payment-history')}
+                className="glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group"
+            >
+                <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 group-hover:scale-110 transition"><CreditCard size={24}/></div>
+                <div><span className="block font-bold text-sm">{user.role === 'doctor' ? 'Earnings' : 'Billing'}</span><span className="text-[10px] text-white/40 uppercase font-black">Payments</span></div>
+            </motion.button>
+
+        </div>
 
       </div>
 
@@ -317,6 +395,28 @@ const Dashboard = () => {
         )}
 
       </AnimatePresence>
+
+      {/* --- AI WELLNESS COMPANION (Bonsai Buddy) --- */}
+      <motion.div 
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 1, duration: 0.8 }}
+        className="fixed bottom-6 right-6 z-40 group"
+      >
+        <div className="absolute bottom-full right-0 mb-4 mr-2 w-64 bg-black/80 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl scale-0 group-hover:scale-100 transition-all origin-bottom-right duration-300">
+           <div className="flex items-center gap-2 mb-2 text-green-400">
+              <Sparkles size={14} /> <span className="text-[10px] font-bold uppercase tracking-widest">Bonsai Buddy</span>
+           </div>
+           <p className="text-xs text-gray-300 leading-relaxed font-serif">
+              "{buddyMsg} You've gained {xp} XP so far!"
+           </p>
+           <div className="absolute bottom-[-6px] right-6 w-3 h-3 bg-black/80 border-r border-b border-white/10 rotate-45"></div>
+        </div>
+        
+        <button className="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(52,211,153,0.4)] hover:shadow-[0_0_30px_rgba(52,211,153,0.6)] transition-all animate-bounce-slow text-white">
+           <MessageSquareHeart size={28} />
+        </button>
+      </motion.div>
 
     </div>
   );

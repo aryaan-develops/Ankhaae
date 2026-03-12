@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast'; // <--- 1. Import Toast
 import { Save, ArrowLeft, History, Trophy, AlertTriangle, Smile, Meh, CloudRain, Frown, Flame, AlertOctagon } from 'lucide-react';
@@ -42,7 +42,7 @@ const Journal = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post('https://ankahee-api.onrender.com/api/journal/create', {
+      await api.post('/journal/create', {
         userId: user._id || user.id,
         mood,
         content,
