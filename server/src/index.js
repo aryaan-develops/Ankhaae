@@ -23,6 +23,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/journal', require('./routes/journal'));
 app.use('/api/doctor', require('./routes/doctor'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Database Connection
 const connectDB = async () => {

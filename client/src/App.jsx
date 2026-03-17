@@ -15,6 +15,7 @@ import MoodBloom from './pages/MoodBloom';
 import MedicalHistory from './pages/MedicalHistory';
 import PaymentHistory from './pages/PaymentHistory';
 import PrescriptionReportForm from './pages/PrescriptionReportForm';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
         <Route path="/medical-history" element={<MedicalHistory />} />
         <Route path="/payment-history" element={<PaymentHistory />} />
         <Route path="/issue-medical" element={<PrescriptionReportForm />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );

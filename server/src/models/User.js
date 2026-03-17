@@ -56,8 +56,13 @@ const userSchema = new mongoose.Schema({
   // --- 5. NEW: DOCTOR / THERAPIST PROFILE 🩺 ---
   role: { 
     type: String, 
-    enum: ['user', 'doctor'], // User ya Doctor
+    enum: ['user', 'doctor', 'admin'], 
     default: 'user' 
+  },
+  status: {
+    type: String,
+    enum: ['active', 'suspended'],
+    default: 'active'
   },
   isDoctor: { 
     type: Boolean, 
