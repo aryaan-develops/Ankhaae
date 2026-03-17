@@ -15,9 +15,16 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         // Authenticate as Admin
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user || user.role !== 'admin') {
-            toast.error("Unauthorized Access!");
+        const localData = localStorage.getItem('user');
+        if (!localData) {
+            navigate('/login');
+            return;
+        }
+
+        const user = JSON.parse(localData);
+        // Ensure both role check and existence
+        if (user.role !== 'admin') {
+            toast.error("Unauthorized Access! Admin only.");
             navigate('/login');
             return;
         }

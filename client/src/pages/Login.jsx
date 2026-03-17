@@ -15,16 +15,23 @@ const Login = () => {
     try {
       const res = await api.post('/auth/login', { email, password });
       
+      // --- SESSION CLEANUP ---
+      localStorage.clear(); 
+      
       // Data save karo
       localStorage.setItem('token', res.data.token);
-      // Ensure karo ki hum user object sahi se save kar rahe hain
-      localStorage.setItem('user', JSON.stringify(res.data.user || res.data)); 
+      const userToSave = res.data.user || res.data;
+      localStorage.setItem('user', JSON.stringify(userToSave)); 
       
       // --- SUCCESS TOAST (Black Popup) ---
       toast.success('Welcome back! 🌱');
       
-      // Smooth Redirect
-      navigate('/dashboard');
+      // Smart Redirect Logic
+      if (userToSave.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
 
     } catch (err) {
       console.error(err);
@@ -71,9 +78,9 @@ const Login = () => {
           <div>
             <label className="block text-sm text-gray-300 mb-1">Email</label>
             <input 
-              type="email" 
+              type="text" 
               className="w-full bg-slate-900/60 border border-slate-500 text-white rounded-lg p-3 focus:outline-none focus:border-green-400 transition-colors placeholder-gray-500"
-              placeholder="you@healing.com"
+              placeholder="Username or Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

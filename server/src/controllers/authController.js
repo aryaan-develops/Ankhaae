@@ -97,6 +97,13 @@ exports.login = async (req, res) => {
         email: admin.email,
         role: 'admin',
         token: generateToken(admin.id),
+        // Add a flat object structure
+        user: {
+          _id: admin.id,
+          username: admin.username,
+          email: admin.email,
+          role: 'admin'
+        }
       });
     }
 
