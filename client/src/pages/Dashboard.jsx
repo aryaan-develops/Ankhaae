@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import api from '../api';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { LogOut, BookOpen, AlertCircle, Quote, Trophy, Instagram, Save, X, Users, Lock, Copy, Check, Stethoscope, Flower2, Sparkles, MessageSquareHeart, CreditCard, FileText } from 'lucide-react'; 
-import { useNavigate } from 'react-router-dom';
+import { LogOut, BookOpen, AlertCircle, Quote, Trophy, Instagram, Save, X, Users, Lock, Copy, Check, Stethoscope, Flower2, Sparkles, MessageSquareHeart, CreditCard, FileText, Home as HomeIcon } from 'lucide-react'; 
+import { useNavigate, Link } from 'react-router-dom';
 // Note: Images/Videos are now used from the public folder directly
 
 const quotes = [
@@ -49,15 +49,20 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchUserAndData = async () => {
-      // 1. Pehle LocalStorage se data uthao taaki page turant dikhe
       const localData = localStorage.getItem('user');
+      setTodaysQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+
       if (!localData) {
-        navigate('/login'); return;
+        // Guest User Setup
+        const guestUser = { username: "Explorer", role: "user", isGuest: true };
+        setUser(guestUser);
+        setXp(0);
+        setLevel(1);
+        setProgress(0);
+        return; 
       }
       
       const parsedUser = JSON.parse(localData);
-      setTodaysQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-
       // Pehle local data set kar do
       setUser(parsedUser);
       setXp(parsedUser.xp || 0);
@@ -108,6 +113,12 @@ const Dashboard = () => {
   };
 
   const handleFindFriend = async () => {
+    if (user.isGuest) {
+      toast.error("Please login to find a buddy! 🤝");
+      navigate('/login');
+      return;
+    }
+
     if (level < 5) {
         toast.error(`🔒 Locked! Level 5 required.\nKeep journaling to unlock! 🚀`, {
             style: { borderRadius: '10px', background: '#333', color: '#fff' },
@@ -148,19 +159,19 @@ const Dashboard = () => {
       
       {/* Background Layer (Fixed at the very bottom) */}
       <div className="fixed inset-0 -z-30 overflow-hidden bg-[#020202]">
-        {/* Cinematic Video */}
-        <video 
-          autoPlay loop muted playsInline 
-          className="w-full h-full object-cover opacity-30 scale-110 blur-[2px] absolute inset-0"
-        >
-          <source src="/dashboard_bg.mp4" type="video/mp4" />
-        </video>
-        
-        {/* Fallback Image with Motion */}
-        <img 
-          src="/signup7.png" 
-          alt="" 
-          className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-lighten bg-breathe-animate"
+        {/* Cinematic Background Image with Breathe Animation */}
+        <motion.img 
+          src="/boat.jpg" 
+          alt="Peaceful Boat" 
+          className="absolute inset-0 w-full h-full object-cover opacity-60"
+          animate={{
+            scale: [1.05, 1.15, 1.05],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
         />
         
         {/* Radial Glow for Depth */}
@@ -182,12 +193,23 @@ const Dashboard = () => {
           <h1 className="text-sm font-bold tracking-tight">Hi, {user.username}</h1>
         </div>
         <div className="flex gap-3">
-            <button onClick={() => setShowSocialModal(true)} className="flex items-center justify-center w-10 h-10 glass-premium rounded-full hover:bg-pink-500/20 transition-all">
-                <Instagram size={18} className="text-white/70" />
-            </button>
-            <button onClick={handleLogout} className="flex items-center gap-2 glass-premium px-5 py-2 rounded-full hover:bg-red-500/20 transition-all text-white/70 hover:text-white">
-                <LogOut size={16} /> <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">Logout</span>
-            </button>
+            <Link to="/" className="flex items-center gap-2 glass-premium px-5 py-2 rounded-full hover:bg-white/10 transition-all text-white/70 hover:text-white">
+                <HomeIcon size={16} /> <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">Home</span>
+            </Link>
+            {!user.isGuest ? (
+              <>
+                <button onClick={() => setShowSocialModal(true)} className="flex items-center justify-center w-10 h-10 glass-premium rounded-full hover:bg-pink-500/20 transition-all">
+                    <Instagram size={18} className="text-white/70" />
+                </button>
+                <button onClick={handleLogout} className="flex items-center gap-2 glass-premium px-5 py-2 rounded-full hover:bg-red-500/20 transition-all text-white/70 hover:text-white">
+                    <LogOut size={16} /> <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">Logout</span>
+                </button>
+              </>
+            ) : (
+              <Link to="/login" className="flex items-center gap-2 glass-premium px-6 py-2 rounded-full bg-green-500/10 hover:bg-green-500/20 transition-all border border-green-500/30">
+                <span className="text-xs font-black uppercase tracking-widest text-green-400">Login to Start</span>
+              </Link>
+            )}
         </div>
       </motion.div>
 
@@ -259,21 +281,27 @@ const Dashboard = () => {
             {/* Journal */}
             <motion.button 
                 whileHover={{ y: -5, backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
-                onClick={() => navigate('/journal')}
+                onClick={() => {
+                  if (user.isGuest) { toast.error("Please login to Journal! 📖"); navigate('/login'); }
+                  else navigate('/journal');
+                }}
                 className="glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group"
             >
                 <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition"><BookOpen size={24}/></div>
-                <div><span className="block font-bold text-sm">Journal</span><span className="text-[10px] text-white/40 uppercase font-black">Reflect</span></div>
+                <div><span className="block font-bold text-sm">Journal</span><span className="text-[10px] text-white/40 uppercase font-black">{user.isGuest ? '🔒 Locked' : 'Reflect'}</span></div>
             </motion.button>
 
             {/* Panic */}
             <motion.button 
                 whileHover={{ y: -5, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
-                onClick={() => navigate('/panic')}
+                onClick={() => {
+                  if (user.isGuest) { toast.error("Please login for support! 🆘"); navigate('/login'); }
+                  else navigate('/panic');
+                }}
                 className="glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group border-red-500/20"
             >
                 <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-400 group-hover:scale-110 transition"><AlertCircle size={24}/></div>
-                <div><span className="block font-bold text-sm">Panic</span><span className="text-[10px] text-white/40 uppercase font-black">Get Calm</span></div>
+                <div><span className="block font-bold text-sm">Panic</span><span className="text-[10px] text-white/40 uppercase font-black">{user.isGuest ? '🔒 Locked' : 'Get Calm'}</span></div>
             </motion.button>
 
             {/* Connect / Friends */}
@@ -291,13 +319,16 @@ const Dashboard = () => {
             {/* Therapist / Patients */}
             <motion.button 
                 whileHover={{ y: -5, backgroundColor: 'rgba(6, 182, 212, 0.1)' }}
-                onClick={() => navigate(user.role === 'doctor' ? '/my-patients' : '/find-doctor')}
-                className="glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group"
+                onClick={() => {
+                  if (user.isGuest) { toast.error("Login to consult a doc! 🩺"); navigate('/login'); }
+                  else navigate(user.role === 'doctor' ? '/my-patients' : '/find-doctor');
+                }}
+                className={`glass-premium p-6 rounded-[30px] flex flex-col gap-4 text-left transition-all group ${user.isGuest ? 'opacity-50' : ''}`}
             >
                 <div className="w-12 h-12 bg-cyan-500/10 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
                     {user.role === 'doctor' ? <Users size={24}/> : <Stethoscope size={24}/>}
                 </div>
-                <div><span className="block font-bold text-sm tracking-tighter">{user.role === 'doctor' ? 'Patients' : 'Therapist'}</span><span className="text-[10px] text-white/40 uppercase font-black">Healing</span></div>
+                <div><span className="block font-bold text-sm tracking-tighter">{user.role === 'doctor' ? 'Patients' : 'Therapist'}</span><span className="text-[10px] text-white/40 uppercase font-black">{user.isGuest ? '🔒 Locked' : 'Healing'}</span></div>
             </motion.button>
 
             {/* Medical Records */}

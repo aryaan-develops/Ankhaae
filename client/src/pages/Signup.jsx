@@ -28,8 +28,12 @@ const Signup = () => {
     e.preventDefault();
     try {
       // Backend request
-      await api.post('/auth/signup', formData);
+      const res = await api.post('/auth/signup', formData);
       
+      // Auto-Login Logic
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data));
+
       // Success Message based on Role
       if (formData.role === 'doctor') {
         toast.success('Clinic Registered! Welcome Doctor 🩺');
@@ -37,7 +41,8 @@ const Signup = () => {
         toast.success('Account Created! Welcome to Ankahee 🌱');
       }
       
-      navigate('/login'); 
+      // Redirect to Dashboard
+      navigate('/dashboard'); 
       
     } catch (err) {
       console.error(err);

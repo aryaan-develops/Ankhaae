@@ -63,6 +63,12 @@ const FindDoctor = () => {
         <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
           Professional Therapists
         </h1>
+        <button 
+          onClick={() => { setLoading(true); window.location.reload(); }}
+          className="ml-auto text-xs bg-white/5 border border-white/10 px-3 py-1 rounded-full hover:bg-white/10"
+        >
+          Refresh List
+        </button>
       </div>
 
       {loading ? (

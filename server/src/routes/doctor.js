@@ -17,7 +17,14 @@ router.get('/all', async (req, res) => {
         { isDoctor: true }
       ]
     }).select('-password');
-    console.log(`Doctors found for ${req.url}:`, doctors.length);
+    
+    console.log(`[DEBUG] /api/doctor/all hit. Found ${doctors.length} results.`);
+    if (doctors.length === 0) {
+        console.log("[DEBUG] No doctors found. Checking all users...");
+        const allUsers = await User.find({}).limit(5).select('username role isDoctor');
+        console.log("[DEBUG] Sample users in DB:", allUsers);
+    }
+    
     res.json(doctors);
   } catch (err) {
     console.error("Fetch doctors error:", err);
