@@ -186,28 +186,28 @@ const Dashboard = () => {
       <motion.div 
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="z-10 w-full max-w-6xl p-6 flex justify-between items-center"
+        className="z-10 w-full max-w-6xl p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 mt-4 md:mt-0"
       >
-        <div className="glass-premium px-5 py-2 rounded-full flex items-center gap-3">
+        <div className="glass-premium px-5 py-2 rounded-full flex items-center gap-3 w-full md:w-auto justify-center md:justify-start">
           <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center animate-pulse">🌱</div>
           <h1 className="text-sm font-bold tracking-tight">Hi, {user.username}</h1>
         </div>
-        <div className="flex gap-3">
-            <Link to="/" className="flex items-center gap-2 glass-premium px-5 py-2 rounded-full hover:bg-white/10 transition-all text-white/70 hover:text-white">
-                <HomeIcon size={16} /> <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">Home</span>
+        <div className="flex gap-3 w-full md:w-auto justify-center md:justify-end">
+            <Link to="/" className="flex items-center gap-2 glass-premium px-5 py-2 rounded-full hover:bg-white/10 transition-all text-white/70 hover:text-white flex-1 md:flex-none justify-center">
+                <HomeIcon size={16} /> <span className="text-xs font-bold uppercase tracking-wider">Home</span>
             </Link>
             {!user.isGuest ? (
               <>
                 <button onClick={() => setShowSocialModal(true)} className="flex items-center justify-center w-10 h-10 glass-premium rounded-full hover:bg-pink-500/20 transition-all">
                     <Instagram size={18} className="text-white/70" />
                 </button>
-                <button onClick={handleLogout} className="flex items-center gap-2 glass-premium px-5 py-2 rounded-full hover:bg-red-500/20 transition-all text-white/70 hover:text-white">
-                    <LogOut size={16} /> <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">Logout</span>
+                <button onClick={handleLogout} className="flex items-center gap-2 glass-premium px-5 py-2 rounded-full hover:bg-red-500/20 transition-all text-white/70 hover:text-white flex-1 md:flex-none justify-center">
+                    <LogOut size={16} /> <span className="text-xs font-bold uppercase tracking-wider">Logout</span>
                 </button>
               </>
             ) : (
-              <Link to="/login" className="flex items-center gap-2 glass-premium px-6 py-2 rounded-full bg-green-500/10 hover:bg-green-500/20 transition-all border border-green-500/30">
-                <span className="text-xs font-black uppercase tracking-widest text-green-400">Login to Start</span>
+              <Link to="/login" className="flex items-center gap-2 glass-premium px-6 py-2 rounded-full bg-green-500/10 hover:bg-green-500/20 transition-all border border-green-500/30 flex-1 md:flex-none justify-center">
+                <span className="text-xs font-black uppercase tracking-widest text-green-400">Login</span>
               </Link>
             )}
         </div>
@@ -221,17 +221,17 @@ const Dashboard = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
-          className="md:col-span-2 lg:col-span-3 glass-premium p-10 rounded-[40px] relative overflow-hidden group min-h-[300px] flex flex-col justify-center"
+          className="md:col-span-2 lg:col-span-3 glass-premium p-6 md:p-10 rounded-[30px] md:rounded-[40px] relative overflow-hidden group min-h-[250px] md:min-h-[300px] flex flex-col justify-center"
         >
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-700"></div>
-            <Quote size={64} className="text-white/5 absolute top-8 left-8" />
+            <Quote size={48} className="text-white/5 absolute top-6 left-6 md:top-8 md:left-8" />
             
-            <h2 className="text-2xl md:text-4xl font-serif italic leading-tight text-white/90 relative z-10 pr-10">
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-serif italic leading-tight text-white/90 relative z-10 pr-6 md:pr-10">
                 "{todaysQuote}"
             </h2>
-            <div className="flex items-center gap-3 mt-8 relative z-10">
+            <div className="flex items-center gap-3 mt-6 md:mt-8 relative z-10">
                 <div className="w-10 h-[1px] bg-white/20"></div>
-                <p className="text-xs font-bold text-white/40 uppercase tracking-[0.3em]">Daily Insight</p>
+                <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em]">Daily Insight</p>
             </div>
         </motion.div>
 
@@ -240,28 +240,28 @@ const Dashboard = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="lg:col-span-1 glass-premium glass-glow-green p-8 rounded-[40px] flex flex-col items-center justify-between text-center min-h-[300px]"
+            className="lg:col-span-1 glass-premium glass-glow-green p-6 md:p-8 rounded-[30px] md:rounded-[40px] flex flex-col items-center justify-between text-center min-h-[250px] md:min-h-[300px]"
         >
-            <div className="bg-yellow-500/10 p-5 rounded-full shadow-[0_0_30px_rgba(234,179,8,0.2)]">
-                <Trophy size={32} className="text-yellow-400" />
+            <div className="bg-yellow-500/10 p-4 md:p-5 rounded-full shadow-[0_0_30px_rgba(234,179,8,0.2)] mb-4 md:mb-0">
+                <Trophy size={28} className="text-yellow-400" />
             </div>
             
-            <div>
-                <h3 className="text-xl font-bold">Level {level}</h3>
-                <p className="text-xs text-green-400 font-bold uppercase tracking-widest mt-1">
+            <div className="mb-4 md:mb-0">
+                <h3 className="text-lg md:text-xl font-bold">Level {level}</h3>
+                <p className="text-[10px] text-green-400 font-bold uppercase tracking-widest mt-1">
                     {level === 1 ? "Seedling" : "Rising Sapling"}
                 </p>
             </div>
 
-            <div className="w-full space-y-2">
-                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+            <div className="w-full space-y-2 mb-4 md:mb-0">
+                <div className="w-full h-1.5 md:h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
                     <motion.div 
                         initial={{ width: 0 }} 
                         animate={{ width: `${progress}%` }} 
                         className="h-full bg-gradient-to-r from-green-400 to-emerald-600 shadow-[0_0_15px_#10b981]"
                     ></motion.div>
                 </div>
-                <div className="flex justify-between text-[10px] text-white/30 font-bold uppercase tracking-tighter">
+                <div className="flex justify-between text-[9px] md:text-[10px] text-white/30 font-bold uppercase tracking-tighter">
                     <span>{xp % 50} / 50 XP</span>
                     <span>To Level {level + 1}</span>
                 </div>
@@ -269,9 +269,9 @@ const Dashboard = () => {
 
             <button 
                 onClick={() => navigate('/mood-bloom')}
-                className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 group"
+                className="w-full py-3 md:py-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 transition-all text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 group"
             >
-                <Flower2 size={14} className="group-hover:rotate-45 transition" /> View Mood Bloom
+                <Flower2 size={12} className="group-hover:rotate-45 transition" /> View Mood Bloom
             </button>
         </motion.div>
 

@@ -48,12 +48,11 @@ const Login = () => {
       {/* Overlay */}
       <div className="absolute top-0 left-0 w-full h-full bg-black/60 z-0"></div>
 
-      {/* --- Main Card --- */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="z-10 bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-96 border border-white/20"
+        className="z-10 bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl w-[90%] sm:w-96 border border-white/20"
       >
         <div className="flex justify-center mb-6">
           <motion.div 

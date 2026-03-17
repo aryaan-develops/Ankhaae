@@ -71,7 +71,7 @@ const Signup = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="z-10 bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/20 my-10"
+        className="z-10 bg-white/10 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl w-[90%] sm:w-full sm:max-w-md border border-white/20 my-10"
       >
         {/* --- ICON HEADER --- */}
         <div className="flex justify-center mb-4">
@@ -149,7 +149,7 @@ const Signup = () => {
                     exit={{ opacity: 0, height: 0 }} 
                     className="space-y-4 overflow-hidden pt-2"
                 >
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label className="block text-xs text-gray-400 mb-1 ml-1">Specialization</label>
                             <input type="text" name="specialization" className="w-full bg-cyan-900/20 border border-cyan-500/30 text-white rounded-lg p-3 focus:border-cyan-400 focus:outline-none placeholder-gray-500 text-sm" placeholder="e.g. Psychologist" value={formData.specialization} onChange={handleChange} required />

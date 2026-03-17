@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
   Heart, 
@@ -10,7 +10,9 @@ import {
   CloudRain, 
   Stethoscope,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Menu,
+  X
 } from 'lucide-react';
 import CustomCursor from '../components/CustomCursor';
 
@@ -33,6 +35,7 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => (
 
 const Home = () => {
   const [scrolled, setScrolled] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -95,19 +98,21 @@ const Home = () => {
           <motion.nav 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out px-8 ${
-              scrolled ? 'py-4 bg-[#020205]/80 backdrop-blur-md border-b border-white/5' : 'py-8 bg-transparent'
+            className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out px-6 md:px-8 ${
+              scrolled ? 'py-4 bg-[#020205]/95 backdrop-blur-md border-b border-white/5' : 'py-6 md:py-8 bg-transparent'
             } flex justify-between items-center`}
           >
-            <Link to="/" className="flex items-center gap-3 group">
+            <Link to="/" className="flex items-center gap-3 group relative z-50">
               <img 
                 src="/feather1.png" 
                 alt="Ankhaee Logo" 
-                className="h-10 w-auto object-contain transition-transform group-hover:scale-110 group-hover:rotate-12"
+                className="h-8 md:h-10 w-auto object-contain transition-transform group-hover:scale-110 group-hover:rotate-12"
               />
-              <span className="text-3xl font-black tracking-tighter text-white">Ankhaee</span>
+              <span className="text-2xl md:text-3xl font-black tracking-tighter text-white">Ankhaee</span>
             </Link>
-            <div className="flex gap-4">
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-4">
               <Link to="/dashboard" className="px-6 py-2.5 font-bold text-white/80 hover:text-white transition-colors bg-white/5 rounded-full border border-white/10 flex items-center gap-2 group">
                 <Sparkles className="w-4 h-4 text-blue-400 group-hover:rotate-12 transition-transform" />
                 Dashboard
@@ -117,6 +122,33 @@ const Home = () => {
                 Get Started
               </Link>
             </div>
+
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="md:hidden relative z-50 p-2 text-white"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+              {mobileMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, x: '100%' }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: '100%' }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                  className="fixed inset-0 bg-[#020205] z-40 flex flex-col items-center justify-center gap-8 p-10"
+                >
+                  <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black text-white hover:text-blue-400 transition-colors">Dashboard</Link>
+                  <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black text-white hover:text-blue-400 transition-colors">Log In</Link>
+                  <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="text-4xl font-black px-10 py-5 bg-white text-black rounded-full hover:bg-blue-400 hover:text-white transition-all shadow-2xl">
+                    Get Started
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.nav>
 
           <motion.div
@@ -128,7 +160,7 @@ const Home = () => {
             <span className="inline-block px-6 py-2 mb-8 text-sm font-bold tracking-[0.3em] text-blue-400 border border-blue-400/30 rounded-full bg-blue-400/5 backdrop-blur-md uppercase animate-pulse">
               Your Mental Wellness Companion
             </span>
-            <h1 className="text-7xl md:text-[10rem] font-black leading-[0.85] tracking-tighter mb-10">
+            <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black leading-[0.85] tracking-tighter mb-10">
               HEAL IN<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-[length:200%_auto] animate-gradient">
                 SILENCE.
@@ -229,22 +261,22 @@ const Home = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
           </div>
 
-          <div className="relative z-10 p-12 md:p-24 flex flex-col items-start text-left max-w-2xl">
+          <div className="relative z-10 p-8 md:p-24 flex flex-col items-center md:items-start text-center md:text-left max-w-4xl">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-6xl md:text-7xl font-black mb-8 tracking-tighter leading-tight text-white drop-shadow-2xl">
+              <h2 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-tight text-white drop-shadow-2xl">
                 READY TO START<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white">FEELING BETTER?</span>
               </h2>
-              <p className="text-2xl text-white/80 mb-12 font-light leading-relaxed">
+              <p className="text-xl md:text-2xl text-white/80 mb-12 font-light leading-relaxed max-w-xl">
                 Join our community of resilience. Your first step towards mental peace starts here, in the comfort of your haven.
               </p>
-              <div className="flex flex-col sm:row gap-6">
-                <Link to="/signup" className="group relative px-12 py-6 bg-white text-black rounded-full font-black text-2xl overflow-hidden transition-all hover:pr-16 shadow-2xl active:scale-95">
-                  <span className="relative z-10 transition-all group-hover:mr-2">JOIN ANKAHEE</span>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center md:justify-start">
+                <Link to="/signup" className="group relative px-10 py-5 bg-white text-black rounded-full font-black text-xl overflow-hidden transition-all hover:pr-16 shadow-2xl active:scale-95">
+                  <span className="relative z-10 transition-all group-hover:mr-2 text-center w-full">JOIN ANKAHEE</span>
                   <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-8 h-8 opacity-0 transition-all group-hover:opacity-100 group-hover:right-8 text-blue-600" />
                 </Link>
               </div>
